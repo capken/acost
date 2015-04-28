@@ -3,5 +3,4 @@ class User < ActiveRecord::Base
   validates_presence_of :password, :on => :create
 
   has_one :bucket
-  has_many :email_verifications
 end

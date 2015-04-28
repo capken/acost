@@ -21,8 +21,13 @@ GEM
     hashids (1.0.1)
     i18n (0.7.0)
     json (1.8.2)
+    mail (2.6.3)
+      mime-types (>= 1.16, < 3)
+    mime-types (2.5)
     minitest (5.6.0)
     multi_json (1.11.0)
+    pony (1.11)
+      mail (>= 2.0)
     rack (1.6.0)
     rack-protection (1.5.3)
       rack
@@ -57,6 +62,7 @@ PLATFORMS
 DEPENDENCIES
   bcrypt (~> 3.1.7)
   hashids
+  pony
   rake
   sinatra
   sinatra-activerecord

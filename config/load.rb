@@ -4,14 +4,14 @@ require 'bundler/setup'
 require 'logger'
 require 'json'
 require 'yaml'
+require 'securerandom'
 
 require 'sinatra/activerecord'
 require 'sinatra/base'
 require 'sinatra/json'
 
 require 'warden'
-
-require 'securerandom'
+require 'pony'
 
 CODE_ROOT = File.join(
     File.expand_path(File.dirname(__FILE__)),

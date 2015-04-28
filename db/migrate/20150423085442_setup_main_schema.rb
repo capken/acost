@@ -18,12 +18,11 @@ class SetupMainSchema < ActiveRecord::Migration
       b.belongs_to :user, index: true
     end
 
-    create_table :email_verification do |e|
-      e.string :email
+    create_table :validations do |e|
+      e.string :code
       e.string :purpose
-      e.string :key
 
-      e.belongs_to :user, index: true
+      e.string :email
 
       e.timestamps null: false
     end

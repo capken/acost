@@ -18,6 +18,7 @@ module Service
     end
 
     delete '/auth/session' do
+      #TODO: reset access token to be empty string
     end
 
     post '/auth/unauthenticated' do

@@ -3,6 +3,7 @@ require './config/load'
 class App < Sinatra::Base
 
   use Service::Auth
+  use Service::Account
 
   get '/' do
     "User authenticated? => #{env['warden'].authenticate?}"
