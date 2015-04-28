@@ -18,7 +18,7 @@ CODE_ROOT = File.join(
     '..'
 ) unless defined? CODE_ROOT
 
-%w[model].each do |dir|
+%w[model service].each do |dir|
   Dir.glob(File.join(CODE_ROOT, "lib/#{dir}/*.rb")).each do |lib_name|
     warn "loading ==> #{lib_name}"
     require lib_name
