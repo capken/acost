@@ -2,7 +2,6 @@ require './config/load'
 
 class App < Sinatra::Base
 
-  use Service::Auth
   use Service::Account
 
   get '/' do
@@ -11,7 +10,8 @@ class App < Sinatra::Base
 
   get '/protected' do
     env['warden'].authenticate!(:access_token)
-    env['warden'].user.to_json
+
+    json env['warden'].user
   end
 
 end
