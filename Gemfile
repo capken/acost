@@ -14,3 +14,5 @@ gem 'hashids'
 
 gem 'warden'
 gem 'pony'
+
+gem 'rack-test'

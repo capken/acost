@@ -63,6 +63,7 @@ DEPENDENCIES
   bcrypt (~> 3.1.7)
   hashids
   pony
+  rack-test
   rake
   sinatra
   sinatra-activerecord

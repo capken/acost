@@ -3,7 +3,42 @@ module Service
 
     TOKEN_HEADER = 'HTTP_ACCESS_TOKEN'
 
-    post '/validation' do
+    post '/users' do
+      validation = Validation.find_by code: params['code'],
+                                      email: params['email'],
+                                      purpose: 'email_check'
+
+      if validation
+        user = User.new do |u|
+          u.name = params['name']
+          u.email = params['email']
+          u.password = params['password']
+          u.access_token = SecureRandom.hex
+        end
+        user.save
+        status 200
+        json data: { type: 'access_token', value: user.access_token }
+      else
+        status 403
+        json errors: [{ title: 'Validation code and email mismatch' }]
+      end
+    end
+
+    put '/users/password' do
+      validation = Validation.find_by code: params['code'],
+                                      email: params['email'],
+                                      purpose: 'password_reset'
+      if validation
+        user = User.find_by email: params['email']
+        user.update password: params['password']
+        status 200
+      else
+        status 403
+        json errors: [{ title: 'Validation code and email mismatch' }]
+      end
+    end
+
+    post '/validations' do
       case params['purpose']
       when /^(email_check|password_reset)$/
         validation = Validation.new do |v|
@@ -19,7 +54,7 @@ module Service
       end
     end
 
-    put '/validation' do
+    put '/validations/:code' do
       validation = Validation.find_by code: params['code'],
                                       email: params['email'],
                                       purpose: params['purpose']
@@ -31,7 +66,7 @@ module Service
       end
     end
 
-    post '/access_token' do
+    post '/access_tokens' do
       user = User.find_by email: params['email']
       if user and user.authenticate(params['password'])
         user.access_token = SecureRandom.hex
@@ -45,14 +80,14 @@ module Service
       end
     end
 
-    delete '/access_token/:token' do
-      count = User.update_all(
-          "access_token = ''", "access_token = #{params['token']}")
+    delete '/access_tokens/:token' do
+      count = User.where(access_token: params['token'])
+                  .update_all(access_token: '')
       if count > 0
         status 200
       else
         status 403
-        json errors: [{ title: 'Access token is invalid' }]
+        json errors: [{ title: "Access token #{params['token']} is invalid" }]
       end
     end
 
