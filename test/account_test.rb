@@ -8,21 +8,33 @@ class AccountTest < MiniTest::Unit::TestCase
 
   include Rack::Test::Methods
 
+  SAMPLE_TOKEN = SecureRandom.hex
+  SAMPLE_VALIDATION_CODE = SecureRandom.hex 5
+
   def app
     App
   end
 
   def setup
-    User.delete_all
-
-    @token = SecureRandom.hex
     @user = User.new do |u|
       u.name = 'allen'
       u.email = 'cap.ken@gmail.com'
       u.password = 'test'
-      u.access_token = @token
+      u.access_token = SAMPLE_TOKEN
     end
     @user.save
+
+    @validation = Validation.new do |v|
+      v.code = SAMPLE_VALIDATION_CODE
+      v.purpose = 'password_reset'
+      v.email = 'c.apken@gmail.com'
+    end
+    @validation.save
+  end
+
+  def teardown
+    User.delete_all
+    Validation.delete_all
   end
 
   def test_create_new_token
@@ -31,12 +43,22 @@ class AccountTest < MiniTest::Unit::TestCase
   end
 
   def test_delete_token
-    delete "/access_tokens/#{@token}"
-    warn last_response.body
-    #assert last_response.ok?
+    delete "/access_tokens/#{SAMPLE_TOKEN}"
+    assert last_response.ok?
 
     user = User.find_by email: @user.email
     assert user
     assert_equal '', user.access_token
   end
+
+  def test_create_new_validation
+    post '/validations', { email: 'c.apken@gmail.com', purpose: 'email_check' }
+    assert last_response.ok?
+  end
+
+  def test_validation_check
+    put "/validations/#{SAMPLE_VALIDATION_CODE}", { email: 'c.apken@gmail.com', purpose: 'password_reset' }
+    assert last_response.ok?
+  end
+
 end
