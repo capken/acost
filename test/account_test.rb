@@ -1,8 +1,4 @@
-ENV['RACK_ENV'] = 'test'
-require 'minitest/autorun'
-require 'rack/test'
-
-require File.join(File.expand_path(File.dirname(__FILE__)), '../app')
+require File.join(File.expand_path(File.dirname(__FILE__)), '../config/test')
 
 class AccountTest < MiniTest::Unit::TestCase
 
@@ -24,12 +20,19 @@ class AccountTest < MiniTest::Unit::TestCase
     end
     @user.save
 
-    @validation = Validation.new do |v|
+    validation = Validation.new do |v|
       v.code = SAMPLE_VALIDATION_CODE
-      v.purpose = 'password_reset'
+      v.purpose = 'email_check'
       v.email = 'c.apken@gmail.com'
     end
-    @validation.save
+    validation.save
+
+    validation = Validation.new do |v|
+      v.code = SAMPLE_VALIDATION_CODE
+      v.purpose = 'password_reset'
+      v.email = 'cap.ken@gmail.com'
+    end
+    validation.save
   end
 
   def teardown
@@ -52,12 +55,27 @@ class AccountTest < MiniTest::Unit::TestCase
   end
 
   def test_create_new_validation
-    post '/validations', { email: 'c.apken@gmail.com', purpose: 'email_check' }
+    post '/validations', { email: 'capk.en@gmail.com', purpose: 'email_check' }
     assert last_response.ok?
   end
 
   def test_validation_check
-    put "/validations/#{SAMPLE_VALIDATION_CODE}", { email: 'c.apken@gmail.com', purpose: 'password_reset' }
+    put "/validations/#{SAMPLE_VALIDATION_CODE}", { email: 'cap.ken@gmail.com', purpose: 'password_reset' }
+    assert last_response.ok?
+  end
+
+  def test_create_new_user
+    post '/users', { email:'c.apken@gmail.com',
+                     name: 'Bill Gates',
+                     password: 'test',
+                     code: SAMPLE_VALIDATION_CODE }
+    assert last_response.ok?
+  end
+
+  def test_change_password
+    put '/users/password', { email:'cap.ken@gmail.com',
+                             password: 'new_password',
+                             code: SAMPLE_VALIDATION_CODE }
     assert last_response.ok?
   end
 
